@@ -35,7 +35,7 @@
 复制下面这段话发给 Codex：
 
 ```text
-帮我查找 GitHub 仓库 MR-Yellowbots/codex-title-kit，下载并安装完整插件，开启话题自动命名并检查是否生效。需要我在界面中确认的步骤，请告诉我怎么操作。
+帮我查找 GitHub 仓库 MR-Yellowbots/codex-title-kit-public，下载并安装完整插件，开启话题自动命名并检查是否生效。需要我在界面中确认的步骤，请告诉我怎么操作。
 ```
 
 安装后，在新话题里正常聊天即可。默认使用 Luna Fast，消耗当前 Codex 账号的模型额度。
@@ -56,7 +56,7 @@
 
 ## 更新
 
-发布版本保存在本仓库的 main 分支，版本号见插件清单。macOS 和 Windows 的本地更新任务每 30 分钟检查一次版本。Windows 的安装入口见[安装与验证](docs/Windows安装与验证.md)。发现新版本时发系统通知，键鼠空闲满 10 分钟后通过 Codex 安装。检查走已登录的 GitHub CLI，不调用模型。Codex 如提示重新信任 Stop Hook，在 `/hooks` 里确认后新版才会自动命名。
+发布版本保存在本仓库的 main 分支，版本号见插件清单。macOS 和 Windows 的本地更新任务每 30 分钟检查一次版本。Windows 的安装入口见[安装与验证](docs/Windows安装与验证.md)。发现新版本时发系统通知，键鼠空闲满 10 分钟后通过 Codex 安装。更新从公开仓库获取，无需 GitHub 登录。检查版本不调用模型。Codex 如提示重新信任 Stop Hook，在 `/hooks` 里确认后新版才会自动命名。
 
 手动刷新并安装：
 
@@ -64,3 +64,14 @@
 codex plugin marketplace upgrade yellowbots-title-kit
 codex plugin add codex-title-kit@yellowbots-title-kit
 ```
+
+
+从旧私库迁移时，先替换同名市场，再安装插件：
+
+```sh
+codex plugin marketplace remove yellowbots-title-kit
+codex plugin marketplace add https://github.com/MR-Yellowbots/codex-title-kit-public.git --ref main
+codex plugin add codex-title-kit@yellowbots-title-kit
+```
+
+既有自动更新任务使用同名市场的目录。切换后可沿用；Windows 也可以重新运行安装脚本验证配置。

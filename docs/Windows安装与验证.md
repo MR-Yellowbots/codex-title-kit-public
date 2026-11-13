@@ -31,7 +31,7 @@ py -3 scripts/codex_title_kit.py configure --codex-bin 'C:\Codex\codex.exe'
 
 自动化矩阵覆盖 Windows 的 Python 3.10/3.13，以及 macOS/Linux 的 Python 3.13。程序测试不调用付费模型；Windows 另安装官方 Codex CLI，检查原生入口解析与 App Server 连接。
 
-2026-09-14 的四组环境均通过全部 54 项测试，结果见 [跨平台验收记录](https://github.com/MR-Yellowbots/codex-title-kit/actions/runs/34799381646)。Windows CLI 检查使用 codex-cli 0.154.0，App Server 连接成功；CI 没有登录账号，也没有加载桌面 Hook。
+2026-09-14 的四组环境均通过全部 54 项测试，结果见 [跨平台验收记录](https://github.com/MR-Yellowbots/codex-title-kit-public/actions/runs/34799381646)。Windows CLI 检查使用 codex-cli 0.154.0，App Server 连接成功；CI 没有登录账号，也没有加载桌面 Hook。
 
 账号环境中的最终检查仍需在 Windows Codex 中完成：新建正常话题、结束一轮有具体目标的对话、检查后台日志与实际显示标题，确认没有额外命名消息。没有这一步证据时，不宣称 Windows 桌面体验已经完整验收。
 
@@ -40,12 +40,10 @@ py -3 scripts/codex_title_kit.py configure --codex-bin 'C:\Codex\codex.exe'
 
 ## 安装 Git 版和自动更新
 
-在 Windows PowerShell 中执行。私有仓库需要用有访问权限的 GitHub 账号登录。
+在 Windows PowerShell 中执行。公开仓库无需 GitHub 登录。若已装旧私库版本，先按 README 替换同名市场。
 
 ```powershell
-gh auth login
-gh auth setup-git
-codex plugin marketplace add https://github.com/MR-Yellowbots/codex-title-kit.git --ref main
+codex plugin marketplace add https://github.com/MR-Yellowbots/codex-title-kit-public.git --ref main
 codex plugin add codex-title-kit@yellowbots-title-kit
 ```
 

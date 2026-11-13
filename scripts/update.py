@@ -7,12 +7,13 @@ import json
 import os
 from pathlib import Path
 import re
-import shlex
 import subprocess
 import sys
 import tempfile
+from urllib.error import URLError
+from urllib.request import urlopen
 
-REPO = "MR-Yellowbots/codex-title-kit"
+REPO = "MR-Yellowbots/codex-title-kit-public"
 MARKETPLACE = "yellowbots-title-kit"
 PLUGIN = "codex-title-kit"
 PLUGIN_ID = f"{PLUGIN}@{MARKETPLACE}"
@@ -29,9 +30,10 @@ def version_key(version):
     return tuple(map(int, version.split(".")))
 
 
-def remote_version(gh):
-    path = f"repos/{REPO}/contents/.codex-plugin/plugin.json?ref=main"
-    manifest = json.loads(run([gh, "api", path, "-H", "Accept: application/vnd.github.raw+json"]))
+def remote_version():
+    url = f"https://raw.githubusercontent.com/{REPO}/main/.codex-plugin/plugin.json"
+    with urlopen(url, timeout=15) as response:
+        manifest = json.loads(response.read(65536))
     if manifest["name"] != PLUGIN:
         raise ValueError("远端插件身份不匹配")
     return manifest["version"]
@@ -46,7 +48,7 @@ def installed_version(codex):
                 raise ValueError("自动更新要求使用 Git 市场安装")
             remote = source.get("source", "").removesuffix(".git").rstrip("/")
             if remote.casefold() not in {REPO.casefold(), f"https://github.com/{REPO}".casefold()}:
-                raise ValueError("已安装插件的 Git 来源与发布仓库不匹配")
+                raise ValueError("已安装插件仍使用旧来源，请按 README 切换到公开市场")
             return plugin["version"]
     raise ValueError("找不到已启用的 Git 版插件")
 
@@ -103,14 +105,10 @@ def save_state(path, state):
         Path(name).unlink(missing_ok=True)
 
 
-def install_update(codex, gh, target, minimum_idle):
-    # 仅给本次 Codex 子进程提供 gh 的 Git 凭据助手，不修改用户 Git 配置。
-    env = os.environ.copy()
-    env.update(GIT_CONFIG_COUNT="2", GIT_CONFIG_KEY_0="credential.https://github.com.helper",
-               GIT_CONFIG_VALUE_0="", GIT_CONFIG_KEY_1="credential.https://github.com.helper",
-               GIT_CONFIG_VALUE_1=f"!{shlex.quote(Path(gh).as_posix())} auth git-credential", GIT_TERMINAL_PROMPT="0")
+def install_update(codex, target, minimum_idle):
+    env = {**os.environ, "GIT_TERMINAL_PROMPT": "0"}
     run([codex, "plugin", "marketplace", "upgrade", MARKETPLACE, "--json"], env=env)
-    if remote_version(gh) != target:
+    if remote_version() != target:
         return "release_changed"
     if idle_seconds() < minimum_idle:
         return "waiting_for_idle"
@@ -123,7 +121,7 @@ def install_update(codex, gh, target, minimum_idle):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--codex", required=True)
-    parser.add_argument("--gh", required=True)
+    parser.add_argument("--gh", help=argparse.SUPPRESS)
     parser.add_argument("--state", type=Path, required=True)
     parser.add_argument("--idle-seconds", type=int, default=DEFAULT_IDLE_SECONDS)
     parser.add_argument("--check", action="store_true", help="只检查版本，不通知或安装")
@@ -132,7 +130,7 @@ def main():
         parser.error("--idle-seconds 必须大于 0")
     if not args.check and sys.platform not in ("darwin", "win32"):
         parser.error("自动安装支持 macOS 和 Windows")
-    current, target = installed_version(args.codex), remote_version(args.gh)
+    current, target = installed_version(args.codex), remote_version()
     if version_key(target) <= version_key(current):
         status = "current"
     elif args.check:
@@ -146,7 +144,7 @@ def main():
         if idle_seconds() < args.idle_seconds:
             status = "waiting_for_idle"
         else:
-            status = install_update(args.codex, args.gh, target, args.idle_seconds)
+            status = install_update(args.codex, target, args.idle_seconds)
             if status == "updated":
                 notify(f"已安装 {target} 版。若 Codex 要求重新信任 Hook，请在 /hooks 中确认。")
     print(json.dumps({"status": status, "installed": target if status == "updated" else current,
@@ -156,6 +154,6 @@ def main():
 if __name__ == "__main__":
     try:
         main()
-    except (OSError, ValueError, KeyError, RuntimeError, subprocess.SubprocessError) as error:
+    except (OSError, ValueError, KeyError, RuntimeError, URLError, subprocess.SubprocessError) as error:
         print(f"更新检查失败（{type(error).__name__}）", file=sys.stderr)
         sys.exit(1)

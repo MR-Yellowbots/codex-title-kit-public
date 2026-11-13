@@ -12,4 +12,4 @@
 
 ## Git 发布
 
-在本机启用的发布源为 MR-Yellowbots/codex-title-kit 的 main 分支。每次发布先增加 .codex-plugin/plugin.json 的正式版本号，运行程序测试，检查差异中没有本机运行态或私人数据，再推送 main 并为对应提交创建 vX.Y.Z GitHub Release。日常编辑先在本地完成，未经用户授权的变更不进入发布分支。更新器通过 Codex 的市场与安装命令更新，Hook 信任由宿主处理。
+在本机启用的发布源为 MR-Yellowbots/codex-title-kit-public 的 main 分支。每次发布先增加 .codex-plugin/plugin.json 的正式版本号，运行程序测试，检查差异中没有本机运行态或私人数据，再推送 main 并为对应提交创建 vX.Y.Z GitHub Release。日常编辑先在本地完成，未经用户授权的变更不进入发布分支。更新器通过 Codex 的市场与安装命令更新，Hook 信任由宿主处理。
