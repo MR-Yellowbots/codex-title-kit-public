@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
-"""检查 GitHub 主分支的插件版本，在 macOS 空闲时交给 Codex 安装。"""
+"""检查 GitHub 主分支的插件版本，在电脑空闲时交给 Codex 安装。"""
 import argparse
+import base64
+import ctypes
 import json
 import os
 from pathlib import Path
@@ -18,7 +20,7 @@ DEFAULT_IDLE_SECONDS = 600
 
 
 def run(args, *, env=None, timeout=90):
-    return subprocess.check_output(args, text=True, env=env, timeout=timeout).strip()
+    return subprocess.check_output(args, encoding="utf-8", env=env, timeout=timeout).strip()
 
 
 def version_key(version):
@@ -50,12 +52,41 @@ def installed_version(codex):
 
 
 def idle_seconds():
+    if sys.platform == "win32":
+        from ctypes import wintypes
+
+        class LastInputInfo(ctypes.Structure):
+            _fields_ = [("cbSize", wintypes.UINT), ("dwTime", wintypes.DWORD)]
+
+        info = LastInputInfo(ctypes.sizeof(LastInputInfo), 0)
+        get_last_input = ctypes.windll.user32.GetLastInputInfo
+        get_last_input.argtypes = [ctypes.POINTER(LastInputInfo)]
+        get_last_input.restype = wintypes.BOOL
+        get_tick = ctypes.windll.kernel32.GetTickCount
+        get_tick.restype = wintypes.DWORD
+        if not get_last_input(ctypes.byref(info)):
+            return 0
+        elapsed = (get_tick() - info.dwTime) & 0xFFFFFFFF
+        return elapsed / 1000 if elapsed < 0x80000000 else 0
+    if sys.platform != "darwin":
+        return 0
     out = run(["/usr/sbin/ioreg", "-r", "-c", "IOHIDSystem", "-d", "1"], timeout=10)
     result = re.search(r'"HIDIdleTime"\s*=\s*([0-9]+)', out)
     return int(result[1]) / 1e9 if result else 0
 
 
 def notify(message):
+    if sys.platform == "win32":
+        # 以 Base64 传 UTF-8 数据，通知文本不参与 PowerShell 代码解析。
+        encoded = base64.b64encode(message.encode("utf-8")).decode("ascii")
+        script = (
+            f"$text = [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String('{encoded}'));"
+            " $shell = New-Object -ComObject WScript.Shell;"
+            " [void]$shell.Popup($text, 8, 'Codex Title Kit', 64)"
+        )
+        run(["powershell.exe", "-NoProfile", "-NonInteractive", "-WindowStyle", "Hidden",
+             "-Command", script], timeout=20)
+        return
     run(["/usr/bin/osascript", "-e",
          f'display notification {json.dumps(message, ensure_ascii=False)} with title "Codex Title Kit"'],
         timeout=10)
@@ -77,7 +108,7 @@ def install_update(codex, gh, target, minimum_idle):
     env = os.environ.copy()
     env.update(GIT_CONFIG_COUNT="2", GIT_CONFIG_KEY_0="credential.https://github.com.helper",
                GIT_CONFIG_VALUE_0="", GIT_CONFIG_KEY_1="credential.https://github.com.helper",
-               GIT_CONFIG_VALUE_1=f"!{shlex.quote(gh)} auth git-credential", GIT_TERMINAL_PROMPT="0")
+               GIT_CONFIG_VALUE_1=f"!{shlex.quote(Path(gh).as_posix())} auth git-credential", GIT_TERMINAL_PROMPT="0")
     run([codex, "plugin", "marketplace", "upgrade", MARKETPLACE, "--json"], env=env)
     if remote_version(gh) != target:
         return "release_changed"
@@ -97,6 +128,10 @@ def main():
     parser.add_argument("--idle-seconds", type=int, default=DEFAULT_IDLE_SECONDS)
     parser.add_argument("--check", action="store_true", help="只检查版本，不通知或安装")
     args = parser.parse_args()
+    if args.idle_seconds < 1:
+        parser.error("--idle-seconds 必须大于 0")
+    if not args.check and sys.platform not in ("darwin", "win32"):
+        parser.error("自动安装支持 macOS 和 Windows")
     current, target = installed_version(args.codex), remote_version(args.gh)
     if version_key(target) <= version_key(current):
         status = "current"

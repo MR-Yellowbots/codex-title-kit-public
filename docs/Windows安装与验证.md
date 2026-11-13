@@ -36,3 +36,25 @@ py -3 scripts/codex_title_kit.py configure --codex-bin 'C:\Codex\codex.exe'
 账号环境中的最终检查仍需在 Windows Codex 中完成：新建正常话题、结束一轮有具体目标的对话、检查后台日志与实际显示标题，确认没有额外命名消息。没有这一步证据时，不宣称 Windows 桌面体验已经完整验收。
 
 参考：[官方 Hook 的 Windows 命令与异步配置](https://learn.chatgpt.com/docs/hooks)、[Python Windows 文件锁](https://docs.python.org/3/library/msvcrt.html)。
+
+
+## 安装 Git 版和自动更新
+
+在 Windows PowerShell 中执行。私有仓库需要用有访问权限的 GitHub 账号登录。
+
+```powershell
+gh auth login
+gh auth setup-git
+codex plugin marketplace add https://github.com/MR-Yellowbots/codex-title-kit.git --ref main
+codex plugin add codex-title-kit@yellowbots-title-kit
+```
+
+在 Codex 的 `/hooks` 中信任 Stop Hook。随后在本仓库或解压后的源码目录运行：
+
+```powershell
+.\scripts\install-update-task.ps1
+```
+
+脚本先读回插件来源及版本，再为当前登录用户注册任务。每 30 分钟检查一次，同版本只提示一次，键鼠空闲满 10 分钟才安装。若找不到原生 CLI，用 `-CodexExe` 指定 `codex.exe` 路径。卸载后台更新任务可运行同一脚本并加 `-Remove`。
+
+macOS 和 Windows 共用版本号、发布标签及命名代码。Windows 的任务计划程序和空闲检查是平台入口；在实际桌面登录会话仍需核验一次通知和跨版本安装。

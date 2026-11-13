@@ -1,6 +1,6 @@
 {
   "name": "codex-title-kit",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "在每轮对话结束后，用独立模型按用户的主要交流语言维护稳定的 emoji 话题标题。",
   "author": {
     "name": "MR-Yellowbots"

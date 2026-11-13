@@ -37,3 +37,15 @@ jobs:
       - name: Windows 原生 CLI 连接检查（不调用模型）
         if: runner.os == 'Windows' && matrix.python == '3.13'
         run: python scripts/codex_title_kit.py doctor
+
+      - name: Windows 更新入口检查
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $tokens = $null
+          $errors = $null
+          [void][System.Management.Automation.Language.Parser]::ParseFile(
+            (Resolve-Path scripts/install-update-task.ps1).Path, [ref]$tokens, [ref]$errors)
+          if ($errors.Count) { throw ($errors | Out-String) }
+          python -c "import sys; sys.path.insert(0, 'scripts'); import update; assert update.idle_seconds() >= 0"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
