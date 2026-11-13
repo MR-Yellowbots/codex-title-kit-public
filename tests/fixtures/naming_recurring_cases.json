@@ -1,0 +1,172 @@
+[
+  {
+    "id": "巡检错分类",
+    "context": {
+      "current_title": "🧩 展会动态｜巡检官方更新",
+      "project_hint": "",
+      "original_goal": "每天查看展会官网，发现官宣、报名或开票变化才通知，日期确认后顺带写日历。",
+      "recent_turns": [
+        {
+          "id": "0",
+          "messages": [
+            {
+              "role": "user",
+              "text": "每天查看展会官网，发现官宣、报名或开票变化才通知，日期确认后顺带写日历。"
+            }
+          ]
+        },
+        {
+          "id": "1",
+          "messages": [
+            {
+              "role": "user",
+              "text": "日历写入失败，请排查并补写。"
+            }
+          ]
+        }
+      ]
+    },
+    "expected": {
+      "action": "rename",
+      "exact_title": "📥 展会动态｜巡检官方更新",
+      "contains": [],
+      "reject": []
+    }
+  },
+  {
+    "id": "项目快照错分类",
+    "context": {
+      "current_title": "🧩 项目进展｜聚类并更新快照",
+      "project_hint": "",
+      "original_goal": "每天读取新增聊天，按已有项目聚类并维护可回查的进展表与日期快照。",
+      "recent_turns": [
+        {
+          "id": "0",
+          "messages": [
+            {
+              "role": "user",
+              "text": "每天读取新增聊天，按已有项目聚类并维护可回查的进展表与日期快照。"
+            }
+          ]
+        },
+        {
+          "id": "1",
+          "messages": [
+            {
+              "role": "user",
+              "text": "先跑去重脚本，再补一次今天的项目快照。"
+            }
+          ]
+        }
+      ]
+    },
+    "expected": {
+      "action": "rename",
+      "exact_title": "🗂️ 项目进展｜聚类并更新快照",
+      "contains": [],
+      "reject": []
+    }
+  },
+  {
+    "id": "正确分类保持",
+    "context": {
+      "current_title": "📥 展会动态｜巡检官方更新",
+      "project_hint": "",
+      "original_goal": "巡检展会官网，有新公告才通知。",
+      "recent_turns": [
+        {
+          "id": "0",
+          "messages": [
+            {
+              "role": "user",
+              "text": "巡检展会官网，有新公告才通知。"
+            }
+          ]
+        },
+        {
+          "id": "1",
+          "messages": [
+            {
+              "role": "user",
+              "text": "这次通知失败了，重跑一次。"
+            }
+          ]
+        }
+      ]
+    },
+    "expected": {
+      "action": "keep",
+      "exact_title": "📥 展会动态｜巡检官方更新",
+      "contains": [],
+      "reject": []
+    }
+  },
+  {
+    "id": "开发巡检工具",
+    "context": {
+      "current_title": "🧩 巡检工具｜开发变更去重",
+      "project_hint": "",
+      "original_goal": "为巡检工具编写变更去重模块，修改代码并补测试。",
+      "recent_turns": [
+        {
+          "id": "0",
+          "messages": [
+            {
+              "role": "user",
+              "text": "为巡检工具编写变更去重模块，修改代码并补测试。"
+            }
+          ]
+        },
+        {
+          "id": "1",
+          "messages": [
+            {
+              "role": "user",
+              "text": "补一个重复公告的回归用例。"
+            }
+          ]
+        }
+      ]
+    },
+    "expected": {
+      "action": "keep",
+      "exact_title": "🧩 巡检工具｜开发变更去重",
+      "contains": [],
+      "reject": []
+    }
+  },
+  {
+    "id": "开发转为长期维护索引",
+    "context": {
+      "current_title": "🧩 工作资料索引｜巡查并更新索引",
+      "project_hint": "",
+      "original_goal": "开发一个浏览器巡查 Skill，并设置为定时任务。",
+      "recent_turns": [
+        {
+          "id": "0",
+          "messages": [
+            {
+              "role": "user",
+              "text": "运行文档巡查，把值得回查的工作资料补到索引。"
+            }
+          ]
+        },
+        {
+          "id": "1",
+          "messages": [
+            {
+              "role": "user",
+              "text": "恢复日常巡查。每轮继续核验工作文档并维护可检索索引。"
+            }
+          ]
+        }
+      ]
+    },
+    "expected": {
+      "action": "rename",
+      "exact_title": "🗂️ 工作资料索引｜巡查并更新索引",
+      "contains": [],
+      "reject": []
+    }
+  }
+]

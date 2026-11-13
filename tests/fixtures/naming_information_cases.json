@@ -1,0 +1,137 @@
+[
+  {
+    "id": "新品动态收集",
+    "context": {
+      "current_title": "待整理",
+      "original_goal": "收集本周 AI 产品发布的新动态和来源链接。",
+      "project_hint": "",
+      "recent_turns": [
+        {
+          "id": "0",
+          "messages": [
+            {
+              "role": "user",
+              "text": "收集本周 AI 产品发布的新动态和来源链接。"
+            }
+          ]
+        }
+      ]
+    },
+    "expected": {
+      "action": "rename",
+      "emoji": "📥",
+      "contains": [],
+      "reject": []
+    }
+  },
+  {
+    "id": "案例索引整理",
+    "context": {
+      "current_title": "待整理",
+      "original_goal": "给 AI 客服案例库按行业打标签并补充可检索索引。",
+      "project_hint": "",
+      "recent_turns": [
+        {
+          "id": "0",
+          "messages": [
+            {
+              "role": "user",
+              "text": "给 AI 客服案例库按行业打标签并补充可检索索引。"
+            }
+          ]
+        }
+      ]
+    },
+    "expected": {
+      "action": "rename",
+      "emoji": "🗂️",
+      "contains": [],
+      "reject": []
+    }
+  },
+  {
+    "id": "归档任务补收",
+    "context": {
+      "current_title": "🗂️ 会议纪要｜按项目归档",
+      "original_goal": "按项目整理会议纪要并建立索引。",
+      "project_hint": "",
+      "recent_turns": [
+        {
+          "id": "0",
+          "messages": [
+            {
+              "role": "user",
+              "text": "按项目整理会议纪要并建立索引。"
+            }
+          ]
+        },
+        {
+          "id": "1",
+          "messages": [
+            {
+              "role": "user",
+              "text": "先补收本周漏掉的会议纪要。"
+            }
+          ]
+        }
+      ]
+    },
+    "expected": {
+      "action": "keep",
+      "emoji": "🗂️",
+      "contains": [],
+      "reject": [],
+      "exact_title": "🗂️ 会议纪要｜按项目归档"
+    }
+  },
+  {
+    "id": "资料比较",
+    "context": {
+      "current_title": "待整理",
+      "original_goal": "收集三种客服方案的证据，对比成本与适用场景，给出选型判断。",
+      "project_hint": "",
+      "recent_turns": [
+        {
+          "id": "0",
+          "messages": [
+            {
+              "role": "user",
+              "text": "收集三种客服方案的证据，对比成本与适用场景，给出选型判断。"
+            }
+          ]
+        }
+      ]
+    },
+    "expected": {
+      "action": "rename",
+      "emoji": "🔎",
+      "contains": [],
+      "reject": []
+    }
+  },
+  {
+    "id": "写操作指南",
+    "context": {
+      "current_title": "待整理",
+      "original_goal": "把现有客服案例资料写成供新人使用的操作指南。",
+      "project_hint": "",
+      "recent_turns": [
+        {
+          "id": "0",
+          "messages": [
+            {
+              "role": "user",
+              "text": "把现有客服案例资料写成供新人使用的操作指南。"
+            }
+          ]
+        }
+      ]
+    },
+    "expected": {
+      "action": "rename",
+      "emoji": "📝",
+      "contains": [],
+      "reject": []
+    }
+  }
+]
